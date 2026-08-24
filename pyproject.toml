@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "persistentvalues"
+version = "0.0.1"
+authors = [
+  { name="arukusuiinpu", email="Alex.Nompe@yandex.ru" },
+]
+description = "A really tiny cachier wrapper for persistent value storage"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+dependencies = [
+  "cachier",
+]
+
+[project.urls]
+Homepage = "https://github.com/arukusuiinpu/persistentvalues"
+Issues = "https://github.com/arukusuiinpu/persistentvalues/issues"
