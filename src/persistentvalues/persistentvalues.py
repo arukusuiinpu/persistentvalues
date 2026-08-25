@@ -1,3 +1,4 @@
+from functools import partial
 from hashlib import sha256
 import os
 import __main__
@@ -39,14 +40,22 @@ class PersistentValue:
         self.id = sha256((repr(id if id is not None else value) + (__main__.__file__ if access in ("script", 0, "0") else (os.getcwd() if access in ("cwd", "local", 1, "1") else ""))).encode()).hexdigest()
 
         self._value = value
+        self._value = get_value(self.id)
 
     def __setattr__(self, key, value):
         if key in ['_value', 'id', 'value', 'cache_dir', 'get_value', 'cached']:
             return object.__setattr__(self, key, value)
         return setattr(self.value, key, value)
 
+    def mutate_attr(self, name, *args, **kwargs):
+        l = self.value
+        func_value = getattr(l, name)(*args, **kwargs)
+        self.value = l
+
+        return func_value
+
     def __getattr__(self, name):
-        return getattr(self.value, name)
+        return partial(self.mutate_attr, name)
 
     def __getitem__(self, key):
         return self.value[key]

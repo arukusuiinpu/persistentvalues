@@ -1,8 +1,8 @@
+from src.persistentvalues import PersistentValue
+
 # persistentvalues
 
 Contains a PersistentValue object that stores the input object as self.value and allows you to interact with it directly as if the object is its own value.
-
-persistentValue.(any function attribute that modifies its own value) <- doesn't work, the object requires explicit assignments to update the value and cache it.
 
 ---
 To modify the stored value, use:
@@ -22,6 +22,15 @@ To get the stored value, use:
 or
 ```pycon
 (variable) = persistentValue()
+```
+
+---
+Mutations work too!
+```pycon
+persistentValue = PersistentValue([2, 3, 1])
+persistentValue.sort()
+print(persistentValue)
+[1, 2, 3]
 ```
 
 ---
@@ -121,7 +130,7 @@ Option 6""".split("\n")
 b = PersistentValue([(i, 0) for i in a], "b") # <- store the initial value under id "b"
 last = PersistentValue([None for _ in range(2)]) # <- store the initial value under procedural id derived from the initial value
 
-def get_random_activity():
+def get_random_option():
     global last, b
     ch = random.choices(b(), weights=[(1 / j if i not in last() else 0) if j > 0 else 1 for i, j in b()], k=1)[0] # <- get the values here and use them just like the initial ones
 
@@ -132,7 +141,7 @@ def get_random_activity():
     return ch[0]
 
 if __name__ == "__main__":
-    print(get_random_activity()) # <- each 
+    print(get_random_option()) # <- each time the program is executed we update the list of already chosen options 
 ```
 
 Console Example:
