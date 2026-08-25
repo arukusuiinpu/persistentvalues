@@ -1,5 +1,3 @@
-from src.persistentvalues import PersistentValue
-
 # persistentvalues
 
 Contains a PersistentValue object that stores the input object as self.value and allows you to interact with it directly as if the object is its own value.
@@ -130,7 +128,7 @@ persistentValue.clear_cache() # <- Clears the cached value
 
 ---
 Example usage:
-```python
+```pycon
 import random
 from persistentvalues import PersistentValue
 
@@ -142,8 +140,8 @@ Option 4
 Option 5
 Option 6""".split("\n")
 
-b = PersistentValue([(i, 0) for i in a], "b") # <- store the initial value under id "b"
-last = PersistentValue([None for _ in range(2)]) # <- store the initial value under procedural id derived from the initial value
+b: list | PersistentValue = PersistentValue([(i, 0) for i in a], "b") # <- store the initial value under id "b"
+last: list | PersistentValue = PersistentValue([None for _ in range(2)]) # <- store the initial value under procedural id derived from the initial value
 
 def get_random_option():
     global last, b
@@ -151,7 +149,7 @@ def get_random_option():
 
     b[b.index(ch)] = (ch[0], ch[1] + 1) # <- modify b using assignment
 
-    last.value = [ch[0]] + last()[:-1] # <- modify last using assignment
+    last.insert(0, ch); last.pop(-1) # <- modify last using mutation
 
     return ch[0]
 
@@ -189,8 +187,6 @@ a.value += 1
 
 print(a)
 1
-
-Process finished with exit code 0
 ```
 
 ```pycon
@@ -202,6 +198,4 @@ a = PersistentValue(0, access=1)
 
 print(a)
 1
-
-Process finished with exit code 0
 ```
