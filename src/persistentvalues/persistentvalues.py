@@ -3,14 +3,16 @@ from hashlib import sha256
 import os
 import __main__
 from os import PathLike
-from typing import Any
+from typing import Generic, TypeVar, Union
 
 from cachier import cachier
 
+T = TypeVar('T')
 
-class PersistentValue:
+class PersistentValue(Generic[T]):
 
-    def __init__(self, value: Any=None, id: str=None, access: str | int="script", cache_dir: str | PathLike | None=None, separate_files: bool=False):
+    def __init__(self, value: T = None, id: str = None, access: str | int = "script",
+                 cache_dir: str | PathLike | None = None, separate_files: bool = False) -> None:
         """
         The PersistentValue object. Stores the value in the cache with access determined by the access value.
 
@@ -29,6 +31,7 @@ class PersistentValue:
             _ = id
             self.cached = False
             return self._value
+
         self.get_value = get_value
 
         if access not in (0, 1, 2, "0", "1", "2", "script", "cwd", "local", "global"):
@@ -37,7 +40,9 @@ class PersistentValue:
         if not hasattr(__main__, "__file__"):
             access = 1
 
-        self.id = sha256((repr(id if id is not None else value) + (__main__.__file__ if access in ("script", 0, "0") else (os.getcwd() if access in ("cwd", "local", 1, "1") else ""))).encode()).hexdigest()
+        self.id = sha256((repr(id if id is not None else value) + (
+            __main__.__file__ if access in ("script", 0, "0") else (
+                os.getcwd() if access in ("cwd", "local", 1, "1") else ""))).encode()).hexdigest()
 
         self._value = value
         self._value = get_value(self.id)
@@ -47,7 +52,7 @@ class PersistentValue:
             return object.__setattr__(self, key, value)
         return setattr(self.value, key, value)
 
-    def mutate_attr(self, name, *args, **kwargs):
+    def _mutate_attr(self, name, *args, **kwargs):
         l = self.value
         func_value = getattr(l, name)(*args, **kwargs)
         self.value = l
@@ -55,15 +60,15 @@ class PersistentValue:
         return func_value
 
     def __getattr__(self, name):
-        return partial(self.mutate_attr, name)
+        return partial(self._mutate_attr, name)
 
     def __getitem__(self, key):
         return self.value[key]
 
     def __setitem__(self, key, value):
-        new_value = self.value.copy()
-        new_value[key] = value
-        self.value = new_value
+        l = self.value
+        l[key] = value
+        self.value = l
 
     def set(self, value):
         self.value = value

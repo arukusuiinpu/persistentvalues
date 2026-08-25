@@ -33,6 +33,21 @@ print(persistentValue)
 [1, 2, 3]
 ```
 
+
+---
+Unfortunately I could not yet implement generic hinting for persistent values, so here is one of the ways to tell your IDE that your persistent value should behave almost the same as its value:
+```pycon
+l: Union[list, PersistentValue] = PersistentValue([1, 2, 3])
+"""
+^ l now has both 'PersistentValue' and 'list' hints
+"""
+```
+or if you're on Python 3.10 and higher:
+```pycon
+l: list | PersistentValue = PersistentValue([1, 2, 3])
+```
+(Remember that assignment to l is still requiring l.value to be modified, it's just now easier to work with your value)
+
 ---
 The input value of PersistentValue(0) is an id determining what cache corresponds to which PersistentValue. That means the following code will use the same cached value despite the intention obviously being in creation of two different persistent values:
 ```pycon
